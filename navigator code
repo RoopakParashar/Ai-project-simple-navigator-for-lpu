@@ -1,0 +1,105 @@
+##code##
+print("\n\n\t\t\t\t Hello, Welcome to the Lovely Professional University Navigation system\n\n\n");
+import numpy
+from collections import defaultdict
+
+class NavigationSystem():
+    def __init__(self):
+        
+        self.routes = defaultdict(list)
+        self.weights = {}
+    
+    def add_route(self, source, your_destination, weight):
+        self.routes[source].append(your_destination)
+        self.routes[your_destination].append(source)
+        self.weights[(source, your_destination)] = weight
+        self.weights[(your_destination, source)] = weight
+
+NavSystem = NavigationSystem()
+
+routes = [
+	('main_gate', 'Baldevraj_park', 2),
+	('main_gate', 'Uni_hospital', 3),
+	('main_gate', 'cc_cafe', 6),
+	('Baldevraj_park', 'pharmacy_block', 2),
+	('pharmacy_block', 'Baldevraj_hall', 4),
+	('Uni_hospital', 'Animation_block', 3),
+	('Uni_hospital', 'GH-2,3,4', 5),
+	('Animation_block', 'GH-2,3,4', 2),
+	('GH-2,3,4', 'Uni_mall', 2),
+	('Uni_mall', 'unipolis', 7),
+	('unipolis', 'Second_gate', 4),
+	('unipolis', 'Dsw', 1),
+	('unipolis', 'business_block', 7),
+	('unipolis', 'Health_center', 7),
+	('cc_cafe', 'business_block', 2),
+	('cc_cafe', 'Baldevraj_hall', 2),
+	('Baldevraj_hall', 'cc_foodcourt', 2),
+	('business_block', 'Baldevraj_hall', 1),
+	('business_block', 'cc_foodcourt', 4),
+	('cc_foodcourt', 'physical_education', 1),
+	('cc_foodcourt', 'hexi_stand', 4),
+	('hexi_stand', 'Admission_block', 3),
+	('hexi_stand', 'Admission_block', 2),
+	('hexi_stand', 'Shantidevi_auditorium', 4),
+	('Physical_Education', 'microscope_park', 2),
+	('Physical_Education', 'microscope_park', 2),
+	('microscope_park', 'Petrochemical_Engineering', 3),
+	('Petrochemical_Engineering', 'bioscience_block', 2),
+	('bioscience_block', 'computer_science', 5),
+	('bioscience_block', 'health_block', 5),
+	('computer_science', 'Shantidevi_auditorium', 3),
+	('Admission_block', 'boys_hostel_123', 3),
+	('Admission_block', 'Law', 1),
+	('Admission_block', 'Shantidevi_auditorium', 3),
+	('Law', 'Main_library', 1),
+	('boys_hostel_123', 'Main_library', 1),
+	('Main_library', 'boys_foodcourt', 3),
+	('Shantidevi_auditorium', 'Main_library', 2),
+	('Shantidevi_auditorium', 'boys_foodcourt', 5),
+
+]
+
+
+for route in routes:
+    NavSystem.add_route(*route)
+
+def navigate(graph, beginning, dest):
+    shortest_routes = {beginning: (None, 0)}
+    current_vertex = beginning
+    visited_vertex = set()
+    
+    while current_vertex != dest:
+        visited_vertex.add(current_vertex)
+        destinations = graph.routes[current_vertex]
+        weight_to_current_vertex = shortest_routes[current_vertex][1]
+
+        for next_vertex in destinations:
+            weight = graph.weights[(current_vertex, next_vertex)] + weight_to_current_vertex
+            if next_vertex not in shortest_routes:
+                shortest_routes[next_vertex] = (current_vertex, weight)
+            else:
+                current_shortest_weight = shortest_routes[next_vertex][1]
+                if current_shortest_weight > weight:
+                    shortest_routes[next_vertex] = (current_vertex, weight)
+        
+        next_destinations = {vertex: shortest_routes[vertex] for vertex in shortest_routes if vertex not in visited_vertex}
+        if not next_destinations:
+            return "Sorry, Route Not Possible Within Unilag Or Please Check Your Spellings"
+     
+        current_vertex = min(next_destinations, key=lambda k: next_destinations[k][1])
+    
+    shortest_path = []
+    while current_vertex is not None:
+        shortest_path.append(current_vertex)
+        next_vertex = shortest_routes[current_vertex][0]
+        current_vertex = next_vertex
+    shortest_path = shortest_path[::-1]
+    return shortest_path
+    
+CurrentLocation = input("Input your current location: ")
+print("\n\t\t\t\tYour source is " + CurrentLocation)
+Destination = input("\nInput your destination: ")
+print("\n\t\t\t\tYour destination is " + Destination)
+print("\n The best route from "+ CurrentLocation + " to "+ Destination + " is \n\t\t\t\t")
+print(navigate(NavSystem, CurrentLocation, Destination))
